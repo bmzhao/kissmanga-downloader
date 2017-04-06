@@ -31,7 +31,6 @@ import java.util.logging.Logger;
  * TODO: Later create abstract class if we want to extend to other kissmanga tlds
  * TODO: maybe experiment with Guice dependency injection
  * TODO: support merging all pngs to pdf
- * TODO: support docker, using firefox selenium image
  */
 public class KissMangaComDownloader implements Closeable, AutoCloseable {
     private WebDriver driver;
@@ -46,7 +45,6 @@ public class KissMangaComDownloader implements Closeable, AutoCloseable {
         profile.setPreference("dom.popup_maximum", 0);
         profile.setPreference("privacy.popups.showBrowserMessage", false);
         profile.setPreference("dom.disable_beforeunload", true);
-//        driver = new FirefoxDriver(profile);
 
         logger = Logger.getLogger(KissMangaComDownloader.class.getName());
         outputDirectory = new File("output/");
@@ -65,16 +63,6 @@ public class KissMangaComDownloader implements Closeable, AutoCloseable {
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
         capabilities.setCapability(FirefoxDriver.PROFILE, profile);
         driver = new RemoteWebDriver(webdriverUrl, capabilities);
-
-//        ChromeOptions options = new ChromeOptions();
-//        Map<String, Object> prefs = new HashMap<String, Object>();
-//        prefs.put("profile.default_content_settings.popups", 0);
-//        options.setExperimentalOption("prefs", prefs);
-//
-//        capabilities = DesiredCapabilities.chrome();
-//        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-////        driver = new ChromeDriver(capabilities);
-//        driver = new RemoteWebDriver(webdriverUrl, capabilities);
     }
 
     private String envOrDefault(String env, String defaultValue) {
