@@ -8,6 +8,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -19,7 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,17 +39,52 @@ public class KissMangaComDownloader implements Closeable, AutoCloseable {
     private final File outputDirectory;
     private static final String BASE_URL = "http://kissmanga.com";
 
+
     public KissMangaComDownloader() {
         //disable popups
         FirefoxProfile profile = new FirefoxProfile();
         profile.setPreference("dom.popup_maximum", 0);
         profile.setPreference("privacy.popups.showBrowserMessage", false);
         profile.setPreference("dom.disable_beforeunload", true);
+//        driver = new FirefoxDriver(profile);
 
-        driver = new FirefoxDriver(profile);
         logger = Logger.getLogger(KissMangaComDownloader.class.getName());
         outputDirectory = new File("output/");
+
+        URL webdriverUrl = null;
+        String seleniumHost = envOrDefault("SELENIUM_HOST", "localhost");
+        String seleniumPort = envOrDefault("SELENIUM_PORT", "4444");
+
+        try {
+            webdriverUrl = new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub");
+        } catch (MalformedURLException e) {
+            logger.log(Level.WARNING, "Failed to parse URL", e);
+            System.exit(1);
+        }
+
+        DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+        capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+        driver = new RemoteWebDriver(webdriverUrl, capabilities);
+
+//        ChromeOptions options = new ChromeOptions();
+//        Map<String, Object> prefs = new HashMap<String, Object>();
+//        prefs.put("profile.default_content_settings.popups", 0);
+//        options.setExperimentalOption("prefs", prefs);
+//
+//        capabilities = DesiredCapabilities.chrome();
+//        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+////        driver = new ChromeDriver(capabilities);
+//        driver = new RemoteWebDriver(webdriverUrl, capabilities);
     }
+
+    private String envOrDefault(String env, String defaultValue) {
+        String toReturn = System.getenv(env);
+        if (toReturn == null || toReturn.isEmpty()) {
+            return defaultValue;
+        }
+        return toReturn;
+    }
+
 
     /**
      * go to any kissmanga url
@@ -74,12 +110,13 @@ public class KissMangaComDownloader implements Closeable, AutoCloseable {
     }
 
     private void changeToAllPagesMode() {
-        Select select = new Select(driver.findElement(By.xpath("//*[@id=\"selectReadType\"]")));
+        Select select = new Select(driver.findElement(By.id("selectReadType")));
         WebElement element = select.getFirstSelectedOption();
         if (!element.getText().equals("All pages")) {
             logger.info("Switching to all pages mode...");
             select.selectByVisibleText("All pages");
-            waitFor(30000);
+            waitFor(15000);
+            logger.info("Finished waiting...");
         }
     }
 
@@ -181,7 +218,6 @@ public class KissMangaComDownloader implements Closeable, AutoCloseable {
      * close KissMangaComDownloader when finished downloading
      * you cannot invoke any other methods on this object afterwards,
      * and must create a new KissMangaComDownloader object
-     *
      */
     public void close() {
         if (driver != null) {
@@ -190,10 +226,24 @@ public class KissMangaComDownloader implements Closeable, AutoCloseable {
         driver = null;
     }
 
-    //TODO support command line urls
     public static void main(String[] args) {
+        System.out.println("Waiting for selenium container to start up...");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //default to attack on titan
+        if (args.length < 1) {
+            System.err.println("Expected usage: java -jar kissmanga-downloader.jar <url of manga>");
+            System.exit(1);
+        }
+
         try (KissMangaComDownloader downloader = new KissMangaComDownloader()) {
-            downloader.downloadAll("http://kissmanga.com/Manga/Shingeki-no-Kyojin");
+            for (String url : args) {
+                downloader.downloadAll(url);
+            }
         }
     }
 }
