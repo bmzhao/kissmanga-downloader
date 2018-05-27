@@ -13,7 +13,7 @@ services:
       - java
       - -jar
       - /kissmanga-downloader.jar
-      - http://kissmanga.com/Manga/Shingeki-no-Kyojin
+      - http://kissmanga.com/Manga/Nanatsu-no-Taizai
   selenium:
     image: "elgalu/selenium:latest"
     ports:
