@@ -13,7 +13,7 @@ services:
       - java
       - -jar
       - /kissmanga-downloader.jar
-      - http://kissmanga.com/Manga/Shingeki-no-Kyojin
+      -https://kissmanga.com/Manga/Death-Note-Colored-Edition/Vol-001-Ch-001--Boredom--Official-Color-Scans-?id=327169
   selenium:
     image: "elgalu/selenium:latest"
     ports:
