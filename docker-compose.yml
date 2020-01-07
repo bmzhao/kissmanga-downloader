@@ -13,7 +13,7 @@ services:
       - java
       - -jar
       - /kissmanga-downloader.jar
-      - http://kissmanga.com/Manga/Shingeki-no-Kyojin
+      -https://kissmanga.com/Manga/Death-Note-Colored-Edition/Vol-001-Ch-001--Boredom--Official-Color-Scans-?id=327169
   selenium:
     image: "elgalu/selenium:latest"
     ports:
@@ -23,5 +23,6 @@ services:
       - TZ=US/Pacific
       - VNC_PASSWORD=secret
     shm_size: 1g
+  
 
 #template-example: https://github.com/elgalu/docker-selenium/blob/master/docker-compose.yml
