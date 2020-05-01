@@ -1,12 +1,12 @@
 version: '2'
 services:
   downloader:
-    image: "bmzhao/kissmanga-downloader:latest"
+    image: "bmzhao/kissmanga-downloader:local"
     depends_on:
       - selenium
     environment:
       - SELENIUM_HOST=selenium
-      - SELENIUM_PORT=24444
+      - SELENIUM_PORT=4444
     volumes:
       - ./output:/output
     entrypoint:
@@ -15,9 +15,9 @@ services:
       - /kissmanga-downloader.jar
       - http://kissmanga.com/Manga/Shingeki-no-Kyojin
   selenium:
-    image: "elgalu/selenium:latest"
+    image: "selenium/standalone-firefox-debug"
     ports:
-      - "5900:25900"
+      - "5900:5900"
     environment:
       - USE_SELENIUM=3
       - TZ=US/Pacific
