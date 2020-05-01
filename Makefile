@@ -1,6 +1,6 @@
 export IMAGE_PREFIX = bmzhao
 export IMAGE_NAME = kissmanga-downloader
-export TAG = latest
+export TAG = local
 
 .PHONY: clean run build remove push
 
@@ -8,7 +8,7 @@ build:
 	mvn package
 	docker build -t=$(IMAGE_PREFIX)/$(IMAGE_NAME):$(TAG) .
 
-run: remove
+run: clean remove build
 	#docker run --name=$(IMAGE_NAME) $(IMAGE_PREFIX)/$(IMAGE_NAME):$(TAG)
 	docker-compose up
 
