@@ -13,7 +13,7 @@ services:
       - java
       - -jar
       - /kissmanga-downloader.jar
-      - http://kissmanga.com/Manga/Shingeki-no-Kyojin
+      - http://kissmangas.com/manga/virtual-world-close-combat-mage
   selenium:
     image: "elgalu/selenium:latest"
     ports:
