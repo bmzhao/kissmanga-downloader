@@ -13,7 +13,7 @@ services:
       - java
       - -jar
       - /kissmanga-downloader.jar
-      - http://kissmanga.com/Manga/Shingeki-no-Kyojin
+      - https://kissmanga.in/kissmanga/return-of-the-flowery-mountain-sect/chapter-1/
   selenium:
     image: "elgalu/selenium:latest"
     ports:
